@@ -22,8 +22,7 @@ function CSVLint (opts, cb) {
 	this.quote = opts.quote || '\"';
 
 	this.lineNo = 0;
-	this.buffer1 = '';
-	this.buffer2 = '';
+	this.buffer = '';
 	
 }
 
@@ -34,13 +33,18 @@ CSVLint.prototype._transform = function(chunk, encoding, cb) {
 	var chunk = chunk.toString(this.encoding);
 
 	if(chunk) {
-		chunk = this.buffer1 + this.buffer2 + chunk;
+		chunk = this.buffer + chunk;
 	}
 	var bkl_arr = this._br_line(chunk);
 	
-	// buffer the two last value, cause might be an incomplete value.
-	this.buffer1 = bkl_arr.pop();
-	this.buffer2 = bkl_arr.pop();
+	// buffer the last value, cause might be an incomplete value.
+	for(var j = bkl_arr.length - 1; j >= 0; j--) {
+		if(bkl_arr[j]) {
+			// if have value
+			this.buffer = bkl_arr[j]
+			break;
+		}
+	}
 
 	if(chunk.indexOf(this.quote) !== -1) {
 		// have quote
