@@ -1,12 +1,12 @@
 # CSVLint
 
-Linting CSV file and report warnings or errors, using specification rfc4180.
+Linting CSV file and report warnings or errors, implementing specification rfc4180.
 
 http://tools.ietf.org/html/rfc4180
 
 ## Origin
 
-CSV files are using in various of fields like Scientests, programmers, and ... . Because of the popularity of `CSV`, having a right convention is really important. So this is CSVLint come up with.
+CSV files are using in various of fields like Scientests, programmers, and ... . Because of the popularity of `CSV`, having a right convention is really important. So this is `CSVLint` come up with.
 
 ## Install
 
@@ -41,9 +41,9 @@ Options are optional.
 - newlint: default to `\n`
 - quote: default to `\"`
 
-## Definition
+## Definitions
 
-For definition we implement the definition in `rfc4180`
+For definitions we implement the definition in `rfc4180`
 
 1.  Each record is located on a separate line, delimited by a line break (CRLF).
 
