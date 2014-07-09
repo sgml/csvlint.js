@@ -1,13 +1,12 @@
 {
   "name": "csvlint",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Linting CSV file and report warnings or errors, implementing specification rfc4180.",
   "main": "csvlint.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "buffertools": "~2.1.2"
   },
   "devDependencies": {},
   "scripts": {

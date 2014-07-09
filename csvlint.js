@@ -3,7 +3,6 @@ var util = require('util');
 
 module.exports = CSVLint;
 
-
 function CSVLint (opts, cb) {
 	if(!(this instanceof CSVLint))
 		return new CSVLint(opts, cb);
@@ -21,14 +20,28 @@ function CSVLint (opts, cb) {
 	this.delimiter = opts.delimiter || ',';
 	this.newline = opts.newline || '\n';
 	this.quote = opts.quote || '\"';
+
+	this.lineNo = 0;
+	this.buffer1 = '';
+	this.buffer2 = '';
 	
 }
 
 util.inherits(CSVLint, Transform);
 
 CSVLint.prototype._transform = function(chunk, encoding, cb) {
+
 	var chunk = chunk.toString(this.encoding);
+
+	if(chunk) {
+		chunk = this.buffer1 + this.buffer2 + chunk;
+	}
 	var bkl_arr = this._br_line(chunk);
+	
+	// buffer the two last value, cause might be an incomplete value.
+	this.buffer1 = bkl_arr.pop();
+	this.buffer2 = bkl_arr.pop();
+
 	if(chunk.indexOf(this.quote) !== -1) {
 		// have quote
 		for (var i = 0; i < bkl_arr.length; i++) {
@@ -67,7 +80,7 @@ CSVLint.prototype._quote = function(line) {
 			if(esc_line.indexOf(this.quote) !== -1) {
 				if(!(esc_line.indexOf(this.quote) === 0 && esc_line.lastIndexOf(this.quote) === esc_line.length - 1)) {
 					// have encluded with double-quotes
-					this.emit('error', new Error('If using double qoutes to start, CSV fields should enclosed with double-quotes. If using double quotes in fields you should escape by using double-quotes.'))
+					this.emit('error', new Error('If using double qoutes to start, CSV fields should enclosed with double-quotes. If using double quotes in fields you should escape by using double-quotes. In line ' + this.lineNo))
 				}
 			}
 		}
@@ -78,12 +91,13 @@ CSVLint.prototype._quote = function(line) {
 // searching delimiter
 CSVLint.prototype._search_d = function (line) {
 	if(line !== '') {
+		this.lineNo++;
 		var d_length = line.split(this.delimiter).length;
 		if(!this._field_length) {
 			this._field_length = d_length;
 		}else {
 			if(d_length !== this._field_length) {
-				this.emit('error', new Error('Field length is not the same'));
+				this.emit('error', new Error('Field length is not the same. In line ' + this.lineNo));
 			}
 		}
 		this.push(line + this.newline)
@@ -92,4 +106,8 @@ CSVLint.prototype._search_d = function (line) {
 
 CSVLint.prototype._flush = function(cb) {
 	this._field_length = null;
+	this.buffer1 = '';
+	this.buffer2 = '';
+	this.lineNo;
+	cb();
 }
