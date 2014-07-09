@@ -52,11 +52,11 @@ CSVLint.prototype._br_line = function(chunk) {
 // quoting problem
 CSVLint.prototype._quote = function(line) {
 	if(line !== '') {
-		var line_split = line.split(",");
+		var line_split = line.split(this.delimiter);
 		for(var j = 0; j < line_split.length; j++) {
 			var line_trim = line_split[j].trim();
 
-			if(line_trim.indexOf('""') !== -1) {
+			if(line_trim.indexOf(this.quotes + this.quotes) !== -1) {
 				// replace all escape double quotes
 				var esc_double_regex  = new RegExp ('(' + this.quote + this.quote + ')*', 'g');
 				var esc_line = line_trim.replace(esc_double_regex, "");
@@ -64,8 +64,8 @@ CSVLint.prototype._quote = function(line) {
 				esc_line = line_trim;
 			}
 
-			if(esc_line.indexOf('"') !== -1) {
-				if(!(esc_line.indexOf('"') === 0 && esc_line.lastIndexOf('"') === esc_line.length - 1)) {
+			if(esc_line.indexOf(this.quotes) !== -1) {
+				if(!(esc_line.indexOf(this.quotes) === 0 && esc_line.lastIndexOf(this.quotes) === esc_line.length - 1)) {
 					// have encluded with double-quotes
 					this.emit('error', new Error('If using double qoutes to start, CSV fields should enclosed with double-quotes. If using double quotes in fields you should escape by using double-quotes.'))
 				}
@@ -78,7 +78,7 @@ CSVLint.prototype._quote = function(line) {
 // searching delimiter
 CSVLint.prototype._search_d = function (line) {
 	if(line !== '') {
-		var d_length = line.split(",").length;
+		var d_length = line.split(this.delimiter).length;
 		if(!this._field_length) {
 			this._field_length = d_length;
 		}else {
