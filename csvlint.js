@@ -29,8 +29,17 @@ util.inherits(CSVLint, Transform);
 CSVLint.prototype._transform = function(chunk, encoding, cb) {
 	var chunk = chunk.toString(this.encoding);
 	var bkl_arr = this._br_line(chunk);
-	this._search_d(bkl_arr, cb);
-
+	if(chunk.indexOf(this.quote) !== -1) {
+		// have quote
+		for (var i = 0; i < bkl_arr.length; i++) {
+			this._quote(bkl_arr[i]);
+		}
+	}else {
+		// no quote
+		for (var i = 0; i < bkl_arr.length; i++) {
+			this._search_d(bkl_arr[i]);
+		}
+	}
 }
 
 CSVLint.prototype._br_line = function(chunk) {
@@ -39,30 +48,43 @@ CSVLint.prototype._br_line = function(chunk) {
 	return bkl_result;
 }
 
-// searching delimiter
-CSVLint.prototype._search_d = function (bkl_arr, cb) {
-	for (var i = 0; i < bkl_arr.length; i++) {
-		if(bkl_arr[i] !== '') {
-			console.log(bkl_arr[i])
-			var d_reg = new RegExp('([^' + this.delimiter + ']*)','g');
-			var d_result = bkl_arr[i].match(d_reg);
-			var n_d_result = [];
-			for(var j = 0; j < d_result.length; j++) {
-				if(d_result[j] !== '') {
-					// have value
-					n_d_result.push(d_result[j]);
-				}
-			}
-			if(!this._field_length) {
-				this._field_length = d_result.length;
+// quoting problem
+CSVLint.prototype._quote = function(line) {
+	if(line !== '') {
+		var line_split = line.split(",");
+		for(var j = 0; j < line_split.length; j++) {
+			var line_trim = line_split[j].trim();
+
+			if(line_trim.indexOf('""') !== -1) {
+				// replace all escape double quotes
+				var esc_double_regex  = new RegExp ('(' + this.quote + this.quote + ')*', 'g');
+				var esc_line = line_trim.replace(esc_double_regex, "");
 			}else {
-				console.log(this._field_length);
-				console.log(d_result.length);
-				if(d_result.length !== this._field_length) {
-					// error the field lenght is not the same
-					throw new Error('Field length is not the same');
+				esc_line = line_trim;
+			}
+
+			if(esc_line.indexOf('"') !== -1) {
+				if(!(esc_line.indexOf('"') === 0 && esc_line.lastIndexOf('"') === esc_line.length - 1)) {
+					// have encluded with double-quotes
+					this.emit('error', new Error('If using double qoutes to start, CSV fields should enclosed with double-quotes. If using double quotes in fields you should escape by using double-quotes.'))
 				}
 			}
 		}
+		this._search_d(line);
+	}
+}
+
+// searching delimiter
+CSVLint.prototype._search_d = function (line) {
+	if(line !== '') {
+		var d_length = line.split(",").length;
+		if(!this._field_length) {
+			this._field_length = d_length;
+		}else {
+			if(d_length !== this._field_length) {
+				this.emit('error', new Error('Field length is not the same'));
+			}
+		}
+		this.push(line)
 	}
 }
