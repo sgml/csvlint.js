@@ -56,7 +56,7 @@ CSVLint.prototype._quote = function(line) {
 		for(var j = 0; j < line_split.length; j++) {
 			var line_trim = line_split[j].trim();
 
-			if(line_trim.indexOf(this.quotes + this.quotes) !== -1) {
+			if(line_trim.indexOf(this.quote + this.quote) !== -1) {
 				// replace all escape double quotes
 				var esc_double_regex  = new RegExp ('(' + this.quote + this.quote + ')*', 'g');
 				var esc_line = line_trim.replace(esc_double_regex, "");
@@ -64,8 +64,8 @@ CSVLint.prototype._quote = function(line) {
 				esc_line = line_trim;
 			}
 
-			if(esc_line.indexOf(this.quotes) !== -1) {
-				if(!(esc_line.indexOf(this.quotes) === 0 && esc_line.lastIndexOf(this.quotes) === esc_line.length - 1)) {
+			if(esc_line.indexOf(this.quote) !== -1) {
+				if(!(esc_line.indexOf(this.quote) === 0 && esc_line.lastIndexOf(this.quote) === esc_line.length - 1)) {
 					// have encluded with double-quotes
 					this.emit('error', new Error('If using double qoutes to start, CSV fields should enclosed with double-quotes. If using double quotes in fields you should escape by using double-quotes.'))
 				}
