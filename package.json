@@ -1,6 +1,6 @@
 {
   "name": "csvlint",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Linting CSV file and report warnings or errors, implementing specification rfc4180.",
   "main": "csvlint.js",
   "directories": {
