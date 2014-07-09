@@ -110,8 +110,7 @@ CSVLint.prototype._search_d = function (line) {
 
 CSVLint.prototype._flush = function(cb) {
 	this._field_length = null;
-	this.buffer1 = '';
-	this.buffer2 = '';
+	this.buffer = '';
 	this.lineNo;
 	cb();
 }
