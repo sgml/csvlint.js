@@ -40,6 +40,7 @@ CSVLint.prototype._transform = function(chunk, encoding, cb) {
 			this._search_d(bkl_arr[i]);
 		}
 	}
+	cb();
 }
 
 CSVLint.prototype._br_line = function(chunk) {
@@ -85,6 +86,10 @@ CSVLint.prototype._search_d = function (line) {
 				this.emit('error', new Error('Field length is not the same'));
 			}
 		}
-		this.push(line)
+		this.push(line + this.newline)
 	}
+}
+
+CSVLint.prototype._flush = function(cb) {
+	this._field_length = null;
 }
