@@ -6,7 +6,7 @@ http://tools.ietf.org/html/rfc4180
 
 ## Origin
 
-CSV files are using in various of fields like Scientests, programmers, and ... . Because of the popularity of `CSV`, having a right convention is really important. So this is `CSVLint` come up with.
+CSV files are using in various of fields like scientests, programmers, and ... . Because of the popularity of `CSV`, having a right convention is really important. So this is `CSVLint` come up with.
 
 ## Install
 
